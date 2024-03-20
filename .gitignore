@@ -1,0 +1,8 @@
+.cproject
+.project
+.settings/
+ADS1118-Driver Debug.launch
+CMSIS/
+Debug/
+STM32F303K8TX_FLASH.ld
+Startup/

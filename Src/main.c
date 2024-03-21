@@ -19,21 +19,29 @@
 #include <stdint.h>
 
 #include "UART.h"
+#include "GeneralPurposeTimer.h"
 
-#define buff_size 6
-uint8_t message[buff_size] = {'h', 'e', 'l', 'l', 'o', '\n'};
+#define buff_size 2
+uint8_t message[buff_size];
 
 int main(void)
 {
+	int i = 0;
+	int max_temp = 70;
 	if(!(UARTInit(USART2) == UARTSuccess)) {
 		// TODO: indicate using an LED that Initialization has Failed
 		return 0;
 	}
 
     /* Loop forever */
-	UARTWriteBuff(USART2, message, buff_size);
 	// TODO: implement delay function
 	while(1) {
+		for(; i < max_temp; i++) {
+			message[0] = '0' + (i / 10);
+			message[1] = (char)('0' + (i % 10));
+			UARTWriteBuff(USART2, message, 2U);
+		}
+		i = 0;
 	}
 
 	return 0;

@@ -13,14 +13,13 @@ TimerStatus delayInit(TIM_TypeDef *TIM) {
 		return TimerFailed;
 	}
 
-	RCC->APB1ENR |= (1U << 0);
+	RCC->APB1ENR |= TIM2_APB1_EN;
 
 	// select internal clock
 	TIM->SMCR &= ~TIM2_SMCR_SMS;
 
 	// select counter mode i.e. Up-Counter
 	TIM->CR1 &= ~TIM2_CR_DIR;
-
 
 	return TimerSuccess;
 }
@@ -37,14 +36,16 @@ TimerStatus delayMS(TIM_TypeDef *TIM, uint32_t milliseconds) {
 	TIM->PSC = 800U - 1;
 
 	// start counter
-	TIM->CR1 |= (1U << 0);
+	TIM->CR1 |= TIM2_START_CNT;
 
 	// block wait for ISR UIF bit to be set
-	while(!(TIM->SR & (1U << 0)));
+	while(!(TIM->SR & TIM2_OVERFLW));
 
 	// clear UIF flag
-	TIM->SR &= ~(1U << 0);
+	TIM->SR &= ~TIM2_OVERFLW;
 
 	// stop counter
-	TIM->CR1 &= ~(1U << 0);
+	TIM->CR1 &= ~TIM2_START_CNT;
+
+	return TimerSuccess;
 }

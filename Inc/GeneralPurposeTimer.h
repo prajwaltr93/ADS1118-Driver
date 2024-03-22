@@ -10,9 +10,12 @@
 
 #include "stm32f3xx.h"
 
-#define TIM2_SMCR_SMS		(7U << 0)
-#define TIM2_CR_DIR			(1U << 4)
-#define TIM2_CR_OPM			(1U << 3)
+#define TIM2_SMCR_SMS			(7U << 0)
+#define TIM2_CR_DIR				(1U << 4)
+#define TIM2_CR_OPM				(1U << 3)
+#define TIM2_APB1_EN			(1U << 0)
+#define TIM2_START_CNT			(1U << 0)
+#define TIM2_OVERFLW			(1U << 0)
 
 enum _TimerStatus {
 	TimerSuccess = 0,

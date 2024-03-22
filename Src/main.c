@@ -33,6 +33,11 @@ int main(void)
 		return 0;
 	}
 
+	if(!((delayInit(TIM2)) == TimerSuccess)) {
+		// TODO: indicate using an LED that Initialization has Failed
+		return 0;
+	}
+
     /* Loop forever */
 	// TODO: implement delay function
 	while(1) {
@@ -40,6 +45,9 @@ int main(void)
 			message[0] = '0' + (i / 10);
 			message[1] = (char)('0' + (i % 10));
 			UARTWriteBuff(USART2, message, 2U);
+
+			// wait here
+			delayMS(TIM2, 10000);
 		}
 		i = 0;
 	}

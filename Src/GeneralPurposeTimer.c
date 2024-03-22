@@ -13,20 +13,38 @@ TimerStatus delayInit(TIM_TypeDef *TIM) {
 		return TimerFailed;
 	}
 
+	RCC->APB1ENR |= (1U << 0);
+
 	// select internal clock
-	// set
 	TIM->SMCR &= ~TIM2_SMCR_SMS;
 
-	// select counter mode i.e. Down-Counter 0
-	TIM->CR1 |= TIM2_CR_DIR;
+	// select counter mode i.e. Up-Counter
+	TIM->CR1 &= ~TIM2_CR_DIR;
 
-	// setup One-pulse mode
-	TIM->CR1 &= ~TIM2_CR_OPM;
-
-	// adjust pre-scaler
 
 	return TimerSuccess;
 }
 
-void delayMS(uint32_t milliseconds) {
+TimerStatus delayMS(TIM_TypeDef *TIM, uint32_t milliseconds) {
+	// check if timer is GPtimer 2
+	if(TIM != TIM2){
+		return TimerFailed;
+	}
+
+	TIM->ARR = milliseconds - 1;
+
+	// adjust pre-scaler
+	TIM->PSC = 800U - 1;
+
+	// start counter
+	TIM->CR1 |= (1U << 0);
+
+	// block wait for ISR UIF bit to be set
+	while(!(TIM->SR & (1U << 0)));
+
+	// clear UIF flag
+	TIM->SR &= ~(1U << 0);
+
+	// stop counter
+	TIM->CR1 &= ~(1U << 0);
 }

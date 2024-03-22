@@ -22,6 +22,6 @@ enum _TimerStatus {
 typedef enum _TimerStatus TimerStatus;
 
 TimerStatus delayInit(TIM_TypeDef *TIM);
-void delayMS(uint32_t milliseconds);
+TimerStatus delayMS(TIM_TypeDef *TIM, uint32_t milliseconds);
 
 #endif /* GENERALPURPOSETIMER_H_ */

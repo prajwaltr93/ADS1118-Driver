@@ -19,6 +19,7 @@
 #include <stdint.h>
 
 #include "UART.h"
+#include "SPI.h"
 #include "GeneralPurposeTimer.h"
 
 #define buff_size 2
@@ -38,7 +39,10 @@ int main(void)
 		return 0;
 	}
 
-    /* Loop forever */
+	SPIInit();
+
+	SPIRead();
+
 	// TODO: implement delay function
 	while(1) {
 		for(; i < max_temp; i++) {

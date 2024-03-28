@@ -69,8 +69,6 @@ void SPIInit(void) {
 	// enable software slave management, SSI bit setting will result in
 	// slave selection
 	SPI1->CR1 |= (1U << 9);
-	// also select slave
-	SPI1->CR1 |= (1U << 8);
 
 	// full duplex on separate lines
 	SPI1->CR1 &= ~(1U << 15);
@@ -90,6 +88,27 @@ void SPIInit(void) {
 	return;
 }
 // SPI write
+void SPIWrite(void) {
+
+	// also select slave
+	SPI1->CR1 &= ~(1U << 8);
+
+	uint8_t size = 2U;
+	uint8_t data = 'c';
+	while(size--) {
+		// wait for TxE
+		while(!(SPI1->SR & (1U << 1)));
+		SPI1->DR = data;
+		size--;
+	}
+	while(!(SPI1->SR & (1U << 1)));
+
+	while((SPI1->SR & (1U << 7)));
+
+	SPI1->CR1 |= (1U << 8);
+
+	return;
+}
 
 // SPI Read
 void SPIRead(void) {
@@ -101,6 +120,7 @@ void SPIRead(void) {
 		data = SPI1->DR;
 		size--;
 	}
+	return;
 }
 
 

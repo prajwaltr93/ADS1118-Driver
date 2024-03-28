@@ -12,5 +12,7 @@
 #define AHB_GPIOA_EN 			(1U << 17)
 
 void SPIInit(void);
+void SPIWrite(void);
+void SPIRead(void);
 
 #endif /* SPI_H_ */

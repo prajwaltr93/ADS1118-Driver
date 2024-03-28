@@ -41,10 +41,9 @@ int main(void)
 
 	SPIInit();
 
-	SPIRead();
-
 	// TODO: implement delay function
 	while(1) {
+		/*
 		for(; i < max_temp; i++) {
 			message[0] = '0' + (i / 10);
 			message[1] = (char)('0' + (i % 10));
@@ -54,6 +53,9 @@ int main(void)
 			delayMS(TIM2, 10000);
 		}
 		i = 0;
+		*/
+		SPIWrite();
+		delayMS(TIM2, 10000);
 	}
 
 	return 0;

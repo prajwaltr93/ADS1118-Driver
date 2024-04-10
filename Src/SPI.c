@@ -7,6 +7,7 @@
 
 #include "SPI.h"
 
+#define default_config_register_value 0x59BU
 // SPI Init
 void SPIInit(void) {
 	// Enable GPIOA if not already and set pin's to alternate function
@@ -16,12 +17,25 @@ void SPIInit(void) {
 
 	// PIN 4, 5, 6, 7 to AF
 	// PIN 4
+	/*
 	GPIOA->MODER |= (1U << 9);
 	GPIOA->MODER &= ~(1U << 8);
+	*/
+
+//	/*
+	GPIOA->ODR |= (1U << 4);
+	GPIOA->MODER |= (1U << 8);
+	GPIOA->MODER &= ~(1U << 9);
+//	*/
 
 	// PIN 5
 	GPIOA->MODER |= (1U << 11);
 	GPIOA->MODER &= ~(1U << 10);
+
+	/*
+	GPIOA->MODER |= (1U << 10);
+	GPIOA->MODER &= ~(1U << 11);
+	*/
 
 	// PIN 6
 	GPIOA->MODER |= (1U << 13);
@@ -69,18 +83,30 @@ void SPIInit(void) {
 	// enable software slave management, SSI bit setting will result in
 	// slave selection
 	SPI1->CR1 |= (1U << 9);
+//	SPI1->CR1 &= ~(1U << 9);
+	SPI1->CR1 &= ~(1U << 8);
 
 	// full duplex on separate lines
+	/*
+	 * 2-line unidirectional data mode selected
+	 */
 	SPI1->CR1 &= ~(1U << 15);
 
 	// MSB First
 	SPI1->CR1 &= ~(1U << 7);
 
+	// generate RXNE if 16 bits of data has arrived
+	SPI1->CR2 &= ~(1U << 12);
+
 	// configure data size 16bit for now
-	SPI1->CR2 |= (1U << 0);
-	SPI1->CR2 |= (1U << 1);
+	SPI1->CR2 |= (1U << 8);
+	SPI1->CR2 |= (1U << 9);
+	SPI1->CR2 |= (1U << 10);
+	SPI1->CR2 |= (1U << 11);
+//	SPI1->CR2 &= ~(1U << 11);
+
+	// SS is enabled if SPI is enabled in master mode
 	SPI1->CR2 |= (1U << 2);
-	SPI1->CR2 &= ~(1U << 3);
 
 	//Enable SPI1
 	SPI1->CR1 |= (1U << 6);
@@ -89,37 +115,41 @@ void SPIInit(void) {
 }
 // SPI write
 void SPIWrite(void) {
-
 	// also select slave
-	SPI1->CR1 &= ~(1U << 8);
+	GPIOA->ODR &= ~(1U << 4);
 
-	uint8_t size = 2U;
-	uint8_t data = 'c';
+	uint8_t size = 1U;
+	uint8_t data = 'D';
+	uint8_t data_1 = 'c';
 	while(size--) {
 		// wait for TxE
 		while(!(SPI1->SR & (1U << 1)));
-		SPI1->DR = data;
-		size--;
+//		SPI1->DR = (uint16_t)((uint16_t)(data << 8) | data_1);
+		SPI1->DR = default_config_register_value;
 	}
-	while(!(SPI1->SR & (1U << 1)));
 
+	while(!(SPI1->SR & (1U << 1)));
 	while((SPI1->SR & (1U << 7)));
 
-	SPI1->CR1 |= (1U << 8);
+	while((SPI1->SR & 0x1800U)); // FIFO empty [12:11] 00
 
+	GPIOA->ODR |= (1U << 4);
 	return;
 }
 
 // SPI Read
 void SPIRead(void) {
-	uint8_t size = 2U;
-	uint8_t data;
+	// wait for RXNE
+	GPIOA->ODR &= ~(1U << 4);
+
+	while(!(SPI1->SR & (1U << 0)));
+	uint8_t size = 1U;
+	uint16_t data;
+
 	while(size--) {
-		// wait for RXNE
-		while(!(SPI1->SR & (1U << 0)));
 		data = SPI1->DR;
-		size--;
 	}
+	GPIOA->ODR |= (1U << 4);
 	return;
 }
 

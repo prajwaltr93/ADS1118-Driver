@@ -39,9 +39,13 @@ int main(void)
 		return 0;
 	}
 
+	// wait for SPI slave to power up
+	delayMS(TIM2, 50);
+
 	SPIInit();
 
-	// TODO: implement delay function
+	delayMS(TIM2, 50);
+
 	while(1) {
 		/*
 		for(; i < max_temp; i++) {
@@ -54,8 +58,11 @@ int main(void)
 		}
 		i = 0;
 		*/
+
 		SPIWrite();
-		delayMS(TIM2, 10000);
+		// wait for some conversion to happen
+		delayMS(TIM2, 1000);
+		SPIRead();
 	}
 
 	return 0;

@@ -19,7 +19,7 @@
 #include <stdint.h>
 
 #include "UART.h"
-#include "SPI.h"
+#include "I2C.h"
 #include "GeneralPurposeTimer.h"
 
 #define buff_size 2
@@ -39,12 +39,8 @@ int main(void)
 		return 0;
 	}
 
-	// wait for SPI slave to power up
-	delayMS(TIM2, 50);
+	I2CInit();
 
-	SPIInit();
-
-	delayMS(TIM2, 50);
 
 	while(1) {
 		/*
@@ -58,11 +54,12 @@ int main(void)
 		}
 		i = 0;
 		*/
+		I2CWrite();
 
-		SPIWrite();
-		// wait for some conversion to happen
-		delayMS(TIM2, 1000);
-		SPIRead();
+//		GPIOB->ODR ^= (1U << 6);
+//		GPIOB->ODR ^= (1U << 7);
+
+		delayMS(TIM2, 10000);
 	}
 
 	return 0;
